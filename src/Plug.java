@@ -9,14 +9,14 @@ public class Plug {
 	
 	public static void main(String[] args) {
 		
-		
+		String data = "byte tony 8";
 
 		String program = "load 0 5 " +
 				"add 0 0 " +
 				"store 0 5 " +
 				"jump -1";
 
-		Plug vm = new Plug(program);
+		Plug vm = new Plug(program, data);
 		
 		System.out.println("starting...\n" + vm);
 		
@@ -36,7 +36,7 @@ public class Plug {
 	private Map<String, Integer> symbol;
 	private int dataBaseAddr;
 
-	public Plug(String program){
+	public Plug(String program, String data){
 		sv = new StateVar();
 		symbol = new HashMap<String, Integer>();
 		dataBaseAddr = countInstructions(program);
@@ -48,6 +48,7 @@ public class Plug {
 			memory[i] = new Data(1);
 		}
 		
+		setupData(data);
 		setupProgram(program);
 		
 	}
