@@ -18,19 +18,20 @@ public class InstructionMaker {
 
 	private Map<String, Integer> symbol;
 	
-	public static void main(String args[]) {
-		Map<String, Integer> symbol = new HashMap<String, Integer>();
-		symbol.put("bob", 10);
-		InstructionMaker im = new InstructionMaker(symbol);
-		System.out.println(im.resolveAddr("135 + bob - 1"));
-	}
 	public InstructionMaker(Map<String, Integer> symbol) {
 		this.symbol = symbol;
 	}
 	
-	public int resolveAddr(String s) {
+	private int resolveAddr(String s) {
 		
-		Matcher matcher = Pattern.compile("[0-9]+|[a-z]+|\\+|\\-").matcher(s);
+		String stripped;
+		if(s.startsWith("[") && s.endsWith("]")) {
+			stripped = s.substring(1, s.length()-1);
+		} else {
+			return -1; // invalid
+		}
+		
+		Matcher matcher = Pattern.compile("[0-9]+|[a-z]+|\\+|\\-").matcher(stripped);
 		int acc = 0;
 		LinkedList<Integer> valList = new LinkedList<Integer>();
 		LinkedList<String> opList = new LinkedList<String>();
@@ -67,31 +68,73 @@ public class InstructionMaker {
 		return acc; 
 	}
 	
+	private int nextIndex(Scanner scanner) {
+		String s = scanner.next();
+		int res;
+		
+		try {
+			res = Integer.parseInt(s);
+		} catch (NumberFormatException e) {
+			res = resolveAddr(s);
+		}
+		
+		return res;
+	}
+	
 	public Data create_const(Scanner scanner) {
-		return new Data(scanner.nextInt());
+		return new Data(nextIndex(scanner));
 	}
 	
 	public Data create_jump(Scanner scanner){
-		int addr = scanner.nextInt();
-		return new Goto(addr);
+		String s = scanner.next();
+		int addr;
+		try {
+			addr = Integer.parseInt(s);
+			return new Goto(addr);
+		} catch (NumberFormatException e) {
+			addr = resolveAddr(s);
+			// return new GotoM(addr);
+		}
+		return null;
 	}
 
 	public Data create_add(Scanner scanner){
 		int r1 = scanner.nextInt();
-		int r2 = scanner.nextInt();		
-		return new AddR(r1, r2);
+		String s = scanner.next();
+		try {
+			int r2 = Integer.parseInt(s);
+			return new AddR(r1, r2);
+		} catch (NumberFormatException e) {
+			int addr = resolveAddr(s);
+			// return new AddM(r1, addr);
+		}
+		return null;
 	}
 	
 	public Data create_load(Scanner scanner){
-		int r = scanner.nextInt();
-		int m = scanner.nextInt();
-		return new LoadR(r, m);
+		int r1 = scanner.nextInt();
+		String s = scanner.next();
+		try {
+			int r2 = Integer.parseInt(s);
+			return new LoadR(r1, r2);
+		} catch (NumberFormatException e) {
+			int addr = resolveAddr(s);
+			// return new LoadM(r1, addr);
+		}
+		return null;
 	}
 	
 	public Data create_store(Scanner scanner){
-		int r = scanner.nextInt();
-		int m = scanner.nextInt();
-		return new StoreR(r, m);
+		int r1 = scanner.nextInt();
+		String s = scanner.next();
+		try {
+			int r2 = Integer.parseInt(s);
+			return new StoreR(r1, r2);
+		} catch (NumberFormatException e) {
+			int addr = resolveAddr(s);
+			// return new StoreM(r1, addr);
+		}
+		return null;
 	}
 	
 	public Data create_stop(Scanner scanner) {
