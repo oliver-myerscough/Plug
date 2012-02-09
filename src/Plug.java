@@ -1,6 +1,8 @@
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 
 public class Plug {
@@ -31,11 +33,13 @@ public class Plug {
 	private StateVar sv;
 	private int MEMLEN = 40;
 	private int dataSize;
-	private Map<String, Integer> symbols;
+	private Map<String, Integer> symbol;
+	private int dataBaseAddr;
 
 	public Plug(String program){
 		sv = new StateVar();
-		symbols = new HashMap<String, Integer>();
+		symbol = new HashMap<String, Integer>();
+		dataBaseAddr = countInstructions(program);
 		
 		memory = new Data[MEMLEN];
 		registers = new int[4];
@@ -46,6 +50,21 @@ public class Plug {
 		
 		setupProgram(program);
 		
+	}
+	
+	private int countInstructions(String program) {
+		int cnt = 0;
+		Scanner scanner = new Scanner(program);
+		Set<String> mnemonics = new HashSet<String>();
+		
+		while(scanner.hasNext()) {
+			String s = scanner.next();
+			if(mnemonics.contains(s)) {
+				cnt++;
+			}
+		}
+		
+		return cnt;
 	}
 	
 	public void run(){
@@ -61,11 +80,13 @@ public class Plug {
 		
 		Scanner scanner = new Scanner(data);
 		
-		DataMaker dataMaker = new DataMaker();
+		DataMaker dataMaker = new DataMaker(memory, dataBaseAddr, symbol);
 		
 		while(scanner.hasNext()) {
 			
-			
+			String s = scanner.next();
+			// assume bytes for now
+			dataMaker.alloc_byte(scanner);
 			
 		}
 		
