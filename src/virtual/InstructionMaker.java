@@ -84,16 +84,15 @@ public class InstructionMaker {
 		
 		while(matcher.find()){
 			String tok = matcher.group(); 
-			System.out.println(tok);
+			
 			if(tok.matches("[A-Z]+")) {
 				if(symbol.containsKey(tok)) {
-					System.out.println("name " + symbol.get(tok));
 					valList.add(symbol.get(tok));
 				} else {
 					System.out.println("name " + tok + " is not in my symbol table");
+					return null;
 				}
 			} else if(tok.matches("[0-9]+")) {
-				System.out.println("number");
 				valList.add(Integer.parseInt(tok));
 			} else if(tok.equals("+") || tok.equals("-")) {
 				opList.add(tok);
@@ -106,11 +105,9 @@ public class InstructionMaker {
 		}
 		
 		acc = valList.pollFirst();
-		System.out.println("acc starts as " + acc);
 		
 		for(int nVal : valList) {
 			String tok = opList.poll();
-			System.out.println("tok: " + tok);
 			
 			if(tok == null) {
 				
@@ -124,7 +121,6 @@ public class InstructionMaker {
 			} 
 		}
 
-		System.out.println("result: " + acc);
 		return acc; 
 	}
 	

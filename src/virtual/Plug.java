@@ -1,6 +1,12 @@
 package virtual;
 import instructions.Instruction;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -12,36 +18,26 @@ import util.BitUtils;
 
 public class Plug {
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws FileNotFoundException {
 		
-		String data = 
-					"byte A 0 " +
-					"byte B 4 " +
-					"byte C 2 " +
-					"byte Z 0 " +
-					"byte O 1 " +
-					"byte N -1";
+		Scanner input;
+		PrintStream output;
 		
-		String program = 
-				"load a [Z] " +
-				"load b [C] " +
-				"ifzer b 7 " +
-				"ifneg b 7 " +
-				"add a [B] " +
-				"sub b [O] " +
-				"goto 2 " +
-				"store a [A] " +
-				"stop ";
+		if(args.length == 1) {
+			output = System.out;
+			input = new Scanner(new FileReader(new File(args[0])));
+		} else if(args.length == 2) {
+			input = new Scanner(new FileReader(new File(args[0])));
+			output = System.out;
+		} else {
+			System.out.println("requires an input program to execute");
+			return;
+		};
 		
-		
-		Plug vm = new Plug(program, data);
-		
-		System.out.println("starting...\n" + vm);
+		Plug vm = new Plug(input, output, false);
 		
 		vm.run();
 		
-		System.out.println("done\n");
-		System.out.println(vm);
 		
 	}
 	
@@ -53,22 +49,42 @@ public class Plug {
 	private Map<String, Integer> symbol;
 	private int dataBaseAddr;
 	private InstructionMaker instrMaker;
+	private PrintStream outputStream;
+	
 
-	public Plug(String program, String data){
+	public Plug(Scanner programInput, PrintStream outputStream, boolean debug){
+		
 		sv = new StateVar();
 		symbol = new HashMap<String, Integer>();
-		dataBaseAddr = countInstructions(program);
 		instrMaker = new InstructionMaker(symbol);
 		memory = new Data[MEMLEN];
 		registers = new int[4];
-		sv.debug = true;
+		sv.debug = debug;
+		this.outputStream = outputStream;
+		
+		StringBuilder dataBuilder = new StringBuilder();
+		StringBuilder programBuilder = new StringBuilder();
+		
+		
+		boolean beforeProg = true;
+		while(programInput.hasNext()) {
+			if(beforeProg) {
+				dataBuilder.append(programInput.next() + " ");
+			} else {
+				programBuilder.append(programInput.next() + " ");
+			}
+		}
+		
+		String program = programBuilder.toString();
+		String data = dataBuilder.toString();
+		
+		dataBaseAddr = countInstructions(program);
 		
 		for(int i = 0; i < MEMLEN; i++) {
 			memory[i] = new Data(0);
 		}
 		
 		setupData(data);
-		System.out.println(this);
 		setupProgram(program);
 		
 	}
@@ -109,6 +125,8 @@ public class Plug {
 			sv.pc++;
 			currInstruction.execute(memory, registers, sv);
 		}
+		
+		outputStream.print(this);
 	}
 	
 	private void setupData(String data) {
@@ -146,7 +164,6 @@ public class Plug {
 
 		
 		try {
-			System.out.println("creating " + name + " instruction");
 			return (Data) InstructionMaker.class.getMethod("create_" + name, Scanner.class).invoke(instrMaker, scanner);
 		} catch (Exception e) {
 			e.printStackTrace();
