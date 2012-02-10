@@ -2,6 +2,8 @@ package virtual;
 import instructions.AddDirect;
 import instructions.AddIndirect;
 import instructions.Goto;
+import instructions.Ifneg;
+import instructions.Ifzer;
 import instructions.LoadDirect;
 import instructions.LoadIndirect;
 import instructions.Stop;
@@ -10,7 +12,6 @@ import instructions.StoreIndirect;
 import instructions.SubDirect;
 import instructions.SubIndirect;
 
-import java.awt.List;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -20,10 +21,26 @@ import java.util.regex.Pattern;
 
 
 public class InstructionMaker {
+	
+	public static void main(String args[]) {
+		
+		Map<String, Integer> symbol = new HashMap<String, Integer>();
+		
+		symbol.put("tony", -10000);
+		
+		InstructionMaker im = new InstructionMaker(symbol);
+		
+		System.out.println(im.resolveAddr("tony + 1"));
+		
+		
+	}
 
 	private Map<String, Integer> symbol;
 	
 	public InstructionMaker(Map<String, Integer> symbol) {
+		if(symbol == null) {
+			System.out.println("InstructionMaker: given a null symbol table");
+		}
 		this.symbol = symbol;
 	}
 	
@@ -31,7 +48,7 @@ public class InstructionMaker {
 		return s.substring(1, s.length()-1);
 	}
 	
-	private Integer getRegisterAddr(String s) {
+	private Integer getRegAddr(String s) {
 		if(s.equals("a")) {
 			return 0;
 		} else if(s.equals("b")) {
@@ -54,19 +71,27 @@ public class InstructionMaker {
 		}
 	}
 	
-	private Integer resolveAddr(String s) {
+	public Integer resolveAddr(String s) {
 		
-		Matcher matcher = Pattern.compile("[0-9]+|[a-z]+|\\+|\\-").matcher(s);
+		Matcher matcher = Pattern.compile("[0-9]+|[A-Z]+|\\+|\\-").matcher(s);
 		int acc = 0;
 		LinkedList<Integer> valList = new LinkedList<Integer>();
 		LinkedList<String> opList = new LinkedList<String>();
 		
+		if(symbol == null) {
+			System.out.println("no symbol table");
+		}
+		
 		while(matcher.find()){
 			String tok = matcher.group(); 
 			System.out.println(tok);
-			if(tok.matches("[a-z]+")) {
-				System.out.println("name");
-				valList.add(symbol.get(tok));
+			if(tok.matches("[A-Z]+")) {
+				if(symbol.containsKey(tok)) {
+					System.out.println("name " + symbol.get(tok));
+					valList.add(symbol.get(tok));
+				} else {
+					System.out.println("name " + tok + " is not in my symbol table");
+				}
 			} else if(tok.matches("[0-9]+")) {
 				System.out.println("number");
 				valList.add(Integer.parseInt(tok));
@@ -81,11 +106,14 @@ public class InstructionMaker {
 		}
 		
 		acc = valList.pollFirst();
+		System.out.println("acc starts as " + acc);
 		
 		for(int nVal : valList) {
 			String tok = opList.poll();
+			System.out.println("tok: " + tok);
 			
 			if(tok == null) {
+				
 				return null;
 			}
 			
@@ -96,6 +124,7 @@ public class InstructionMaker {
 			} 
 		}
 
+		System.out.println("result: " + acc);
 		return acc; 
 	}
 	
@@ -116,23 +145,27 @@ public class InstructionMaker {
 		return new Data(nextIndex(scanner));
 	}
 	
-	public Data create_jump(Scanner scanner){
-		String s = scanner.next();
-		int addr;
-		try {
-			addr = Integer.parseInt(s);
-			return new Goto(addr);
-		} catch (NumberFormatException e) {
-			// this shouldn't happen
-		}
-		return null;
+	public Data create_goto(Scanner scanner){
+		int addr = getMemAddr(scanner.next());
+		return new Goto(addr);
+	}
+	
+	public Data create_ifzer(Scanner scanner) {
+		int reg = getRegAddr(scanner.next());
+		int addr = getMemAddr(scanner.next());
+		return new Ifzer(reg, addr);
 	}
 
+	public Data create_ifneg(Scanner scanner) {
+		int reg = getRegAddr(scanner.next());
+		int addr = getMemAddr(scanner.next());
+		return new Ifneg(reg, addr);
+	}
 	public Data create_add(Scanner scanner){
-		int r1 = scanner.nextInt();
+		int r1 = getRegAddr(scanner.next());
 		String s = stripAddressString(scanner.next());
 		
-		Integer r2 = getRegisterAddr(s);
+		Integer r2 = getRegAddr(s);
 		if(r2 != null) {
 			return new AddIndirect(r1, r2);
 		}
@@ -147,10 +180,10 @@ public class InstructionMaker {
 	}
 	
 	public Data create_sub(Scanner scanner){
-		int r1 = scanner.nextInt();
+		int r1 = getRegAddr(scanner.next());
 		String s = stripAddressString(scanner.next());
 		
-		Integer r2 = getRegisterAddr(s);
+		Integer r2 = getRegAddr(s);
 		if(r2 != null) {
 			return new SubIndirect(r1, r2);
 		}
@@ -165,10 +198,10 @@ public class InstructionMaker {
 	}
 	
 	public Data create_load(Scanner scanner){
-		int r1 = scanner.nextInt();
+		int r1 = getRegAddr(scanner.next());
 		String s = stripAddressString(scanner.next());
 		
-		Integer r2 = getRegisterAddr(s);
+		Integer r2 = getRegAddr(s);
 		if(r2 != null) {
 			return new LoadIndirect(r1, r2);
 		}
@@ -182,10 +215,10 @@ public class InstructionMaker {
 	}
 	
 	public Data create_store(Scanner scanner){
-		int r1 = scanner.nextInt();
+		int r1 = getRegAddr(scanner.next());
 		String s = stripAddressString(scanner.next());
 		
-		Integer r2 = getRegisterAddr(s);
+		Integer r2 = getRegAddr(s);
 		if(r2 != null) {
 			return new StoreIndirect(r1, r2);
 		}

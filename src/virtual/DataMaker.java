@@ -20,7 +20,9 @@ public class DataMaker {
 	
 	public void alloc_byte(Scanner scanner) {
 		
-		symbol.put(scanner.next(), baseAddr + assignedStorage);
+		String name = scanner.next();
+		System.out.println("allocating byte under name " + name);
+		symbol.put(name, baseAddr + assignedStorage);
 		memory[baseAddr + assignedStorage] = new Data(scanner.nextInt());
 		assignedStorage++;
 		

@@ -12,12 +12,22 @@ public class Plug {
 	
 	public static void main(String[] args) {
 		
-		String data = "byte tony 8";
-
-		String program = "load 0 5 " +
-				"add 0 0 " +
-				"store 0 5 " +
-				"jump -1";
+		String data = "byte A 2 " +
+					"byte B 4 " +
+					"byte C 0 " +
+					"byte Z 0 " +
+					"byte O 1 ";
+		
+		String program = 
+				"load a [Z] " +
+				"load b [C] " +
+				"ifzer b 7 " +
+				"ifneg b 7 " +
+				"add a [B] " +
+				"sub b [O] " +
+				"goto 2 " +
+				"store a [A] " +
+				"goto -1 ";
 
 		Plug vm = new Plug(program, data);
 		
@@ -38,17 +48,18 @@ public class Plug {
 	private int dataSize;
 	private Map<String, Integer> symbol;
 	private int dataBaseAddr;
+	private InstructionMaker instrMaker;
 
 	public Plug(String program, String data){
 		sv = new StateVar();
 		symbol = new HashMap<String, Integer>();
 		dataBaseAddr = countInstructions(program);
-		
+		instrMaker = new InstructionMaker(symbol);
 		memory = new Data[MEMLEN];
 		registers = new int[4];
 		
 		for(int i = 0; i < MEMLEN; i++) {
-			memory[i] = new Data(1);
+			memory[i] = new Data(0);
 		}
 		
 		setupData(data);
@@ -66,7 +77,9 @@ public class Plug {
 		mnemonics.add("add");
 		mnemonics.add("sub");
 		mnemonics.add("store");
-		mnemonics.add("jump");
+		mnemonics.add("goto");
+		mnemonics.add("ifneg");
+		mnemonics.add("ifzer");
 		
 		while(scanner.hasNext()) {
 			String s = scanner.next();
@@ -95,7 +108,7 @@ public class Plug {
 		
 		while(scanner.hasNext()) {
 			
-			String s = scanner.next();
+			scanner.next();
 			// assume bytes for now
 			dataMaker.alloc_byte(scanner);
 			
@@ -122,10 +135,10 @@ public class Plug {
 		
 		String name = scanner.next();
 
-		InstructionMaker im = new InstructionMaker(null);
 		
 		try {
-			return (Data) InstructionMaker.class.getMethod("create_" + name, Scanner.class).invoke(im, scanner);
+			System.out.println("creating " + name + " instruction");
+			return (Data) InstructionMaker.class.getMethod("create_" + name, Scanner.class).invoke(instrMaker, scanner);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -140,7 +153,7 @@ public class Plug {
 		sb.append("PC: " + sv.pc + " CMP: " + sv.cmp + "\n0\t");
 
 		for(int i = 0; i < memory.length; i++){
-			sb.append( Integer.toBinaryString(memory[i].getVal()) + "\t\t" );
+			sb.append( (memory[i] != null ? Integer.toBinaryString(memory[i].getVal()) : "null") + "\t\t" );
 			if(i % 5 == 4) sb.append("\n" + (i+1) + "\t");
 		}
 		
