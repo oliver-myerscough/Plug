@@ -6,19 +6,17 @@ import virtual.StateVar;
 
 public class StoreR extends Instruction {
 
-	private int memIndex;
-	private int regIndex;
-	
-	public StoreR(int ri, int mi){
-		super(BitUtils.createInstrValOne(2, ri, mi));
-		memIndex = mi;
-		regIndex = ri;
+	private int r1, r2;
+
+	public StoreR(int r1, int r2){
+		super(BitUtils.createInstrValTwo(10, r1, r2));
+		this.r1 = r1;
+		this.r2 = r2;
 	}
 
 	@Override
 	public void execute(Data[] memory, int[] registers, StateVar sv) {
-	//	System.out.println("storing " + regIndex + "(" + registers[regIndex] + ")" + " in " + memIndex);
-		memory[memIndex] = new Data(registers[regIndex]);
+		memory[r2] = new Data(registers[r1]);
 	}
 
 }

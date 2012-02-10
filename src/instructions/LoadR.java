@@ -6,20 +6,19 @@ import virtual.StateVar;
 
 public class LoadR extends Instruction {
 
-	private int memIndex;
-	private int regIndex;
+	private int r1, r2;
 	
-	public LoadR(int ri, int mi){
-		super(BitUtils.createInstrValOne(1, ri, mi));
-		memIndex = mi;
-		regIndex = ri;
+	public LoadR(int r1, int r2){
+		super(BitUtils.createInstrValTwo(9, r1, r2));
+		this.r1 = r1;
+		this.r2 = r2;
 	}
 
 
 	@Override
 	public void execute(Data[] memory, int[] registers, StateVar sv) {
 //		System.out.println("loading " + memIndex + " into " + regIndex);
-		registers[regIndex] = memory[memIndex].getVal();
+		registers[r1] = memory[registers[r2]].getVal();
 	}
 
 }
