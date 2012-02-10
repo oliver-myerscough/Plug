@@ -1,0 +1,16 @@
+byte A 0
+byte B 4
+byte C 2
+byte Z 0
+byte O 1
+byte N -1
+program
+load a [Z]
+load b [C]
+ifzer b 7
+ifneg b 7
+add a [B]
+sub b [O]
+goto 2
+store a [A]
+stop
