@@ -12,11 +12,13 @@ public class Plug {
 	
 	public static void main(String[] args) {
 		
-		String data = "byte A 0 " +
+		String data = 
+					"byte A 0 " +
 					"byte B 4 " +
 					"byte C 2 " +
 					"byte Z 0 " +
-					"byte O 1 ";
+					"byte O 1 " +
+					"byte N -1";
 		
 		String program = 
 				"load a [Z] " +
@@ -46,7 +48,6 @@ public class Plug {
 	private int progEnd;
 	private StateVar sv;
 	private int MEMLEN = 40;
-	private int dataSize;
 	private Map<String, Integer> symbol;
 	private int dataBaseAddr;
 	private InstructionMaker instrMaker;
@@ -117,8 +118,6 @@ public class Plug {
 			
 		}
 		
-		dataSize = dataMaker.getAssignedStorageSize();
-		
 	}
 
 	private void setupProgram(String program) {
@@ -153,11 +152,12 @@ public class Plug {
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		
-		sb.append("PC: " + sv.pc + " CMP: " + sv.cmp + "\n0\t");
+		sb.append("PC: " + sv.pc + "\n0\t");
 
 		for(int i = 0; i < memory.length; i++){
-			sb.append( (memory[i] != null ? Integer.toBinaryString(memory[i].getVal()) : "null") + "\t\t" );
-			if(i % 5 == 4) sb.append("\n" + (i+1) + "\t");
+			String hex = Integer.toHexString(memory[i].getVal()); 
+			sb.append(hex + (hex.length() == 8 ? "\t" : "\t\t"));
+			if(i % 5 == 4 && i != memory.length-1) sb.append("\n" + (i+1) + "\t");
 		}
 		
 		return sb.toString();
