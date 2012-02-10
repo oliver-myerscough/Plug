@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
+import util.BitUtils;
+
 
 public class Plug {
 	
@@ -98,7 +100,12 @@ public class Plug {
 	public void run(){
 		
 		while (sv.pc != -1) {
-			Instruction currInstruction = (Instruction) memory[sv.pc];
+			Instruction currInstruction; 
+			if(memory[sv.pc] instanceof Instruction) {
+				currInstruction = (Instruction) memory[sv.pc];
+			} else {
+				currInstruction = BitUtils.interpretInstruction(memory[sv.pc]);
+			}
 			sv.pc++;
 			currInstruction.execute(memory, registers, sv);
 		}
