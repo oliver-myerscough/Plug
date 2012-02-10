@@ -17,6 +17,11 @@ public class LoadIndirect extends Instruction {
 
 	@Override
 	public void execute(Data[] memory, int[] registers, StateVar sv) {
+		
+		if(sv.debug) {
+			System.out.println("load r" + r1 + " from mem[r" + r2 + "]");
+		}
+		
 //		System.out.println("loading " + memIndex + " into " + regIndex);
 		registers[r1] = memory[registers[r2]].getVal();
 	}

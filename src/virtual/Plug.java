@@ -12,9 +12,9 @@ public class Plug {
 	
 	public static void main(String[] args) {
 		
-		String data = "byte A 2 " +
+		String data = "byte A 0 " +
 					"byte B 4 " +
-					"byte C 0 " +
+					"byte C 2 " +
 					"byte Z 0 " +
 					"byte O 1 ";
 		
@@ -27,8 +27,9 @@ public class Plug {
 				"sub b [O] " +
 				"goto 2 " +
 				"store a [A] " +
-				"goto -1 ";
-
+				"stop ";
+		
+		
 		Plug vm = new Plug(program, data);
 		
 		System.out.println("starting...\n" + vm);
@@ -57,6 +58,7 @@ public class Plug {
 		instrMaker = new InstructionMaker(symbol);
 		memory = new Data[MEMLEN];
 		registers = new int[4];
+		sv.debug = true;
 		
 		for(int i = 0; i < MEMLEN; i++) {
 			memory[i] = new Data(0);
@@ -80,6 +82,7 @@ public class Plug {
 		mnemonics.add("goto");
 		mnemonics.add("ifneg");
 		mnemonics.add("ifzer");
+		mnemonics.add("stop");
 		
 		while(scanner.hasNext()) {
 			String s = scanner.next();

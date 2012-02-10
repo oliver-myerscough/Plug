@@ -16,6 +16,12 @@ public class AddIndirect extends Instruction {
 	
 	@Override
 	public void execute(Data[] memory, int[] registers, StateVar sv) {
+		
+		
+		if(sv.debug) {
+			System.out.println("r" + r1 + " += mem[r" + r2 + "]");
+		}
+		
 	//	System.out.println("adding " + r2 + "(" + registers[r2] + ")" + " to " + r1+ " (" + registers[r1] + ")");
 		registers[r1] += memory[registers[r2]].getVal();
 	}

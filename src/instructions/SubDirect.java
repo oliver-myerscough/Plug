@@ -17,6 +17,11 @@ public class SubDirect extends Instruction {
 
 	@Override
 	public void execute(Data[] memory, int[] registers, StateVar sv) {
+		
+		if(sv.debug) {
+			System.out.println("r" + rIndex + " -= mem[" + mIndex + "]");
+		}
+		
 		registers[rIndex] -= memory[mIndex].getVal();
 	}
 	

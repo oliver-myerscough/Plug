@@ -11,7 +11,12 @@ public class Stop extends Instruction {
 	
 	@Override
 	public void execute(Data[] memory, int[] registers, StateVar sv) {
-		// nothing
+		
+		if(sv.debug) {
+			System.out.println("stop");
+		}
+		
+		sv.pc = -1;
 	}
 
 }

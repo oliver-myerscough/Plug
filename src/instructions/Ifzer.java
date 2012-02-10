@@ -18,7 +18,12 @@ public class Ifzer extends Instruction {
 	@Override
 	public void execute(Data[] memory, int[] registers, StateVar sv) {
 		if(registers[reg] == 0) {
+			if(sv.debug) {
+				System.out.println("r" + reg + " = 0, jump to " + addr);
+			}
 			sv.pc = addr;
+		} else if(sv.debug) {
+			System.out.println("r" + reg + " != 0, no jump");
 		}
 	}
 

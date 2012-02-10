@@ -16,6 +16,11 @@ public class LoadDirect extends Instruction {
 
 	@Override
 	public void execute(Data[] memory, int[] registers, StateVar sv) {
+		
+		if(sv.debug) {
+			System.out.println("load r" + rIndex + " from mem " + mIndex);
+		}
+		
 		registers[rIndex] = memory[mIndex].getVal();
 	}
 

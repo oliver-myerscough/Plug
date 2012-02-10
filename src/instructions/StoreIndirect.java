@@ -16,6 +16,11 @@ public class StoreIndirect extends Instruction {
 
 	@Override
 	public void execute(Data[] memory, int[] registers, StateVar sv) {
+		
+		if(sv.debug) {
+			System.out.println("store r" + r1 + " in mem[r" + r2 + "]");
+		}
+		
 		memory[registers[r2]] = new Data(registers[r1]);
 	}
 

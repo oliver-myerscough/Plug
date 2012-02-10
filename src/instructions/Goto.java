@@ -15,6 +15,11 @@ public class Goto extends Instruction {
 
 	@Override
 	public void execute(Data[] memory, int[] registers, StateVar sv) {
+	
+		if(sv.debug) {
+			System.out.println("goto " + jumpTo);
+		}
+		
 		sv.pc = jumpTo;
 	}
 

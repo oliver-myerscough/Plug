@@ -16,6 +16,11 @@ public class SubIndirect extends Instruction {
 	
 	@Override
 	public void execute(Data[] memory, int[] registers, StateVar sv) {
+		
+		if(sv.debug) {
+			System.out.println("r" + r1 + " -= mem[r" + r2 + "]");
+		}
+		
 		registers[r1] -= memory[registers[r2]].getVal();
 	}
 
