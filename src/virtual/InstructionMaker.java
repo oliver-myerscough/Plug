@@ -1,9 +1,9 @@
 package virtual;
-import instructions.AddR;
+import instructions.AddIndirect;
 import instructions.Goto;
-import instructions.LoadR;
+import instructions.LoadIndirect;
 import instructions.Stop;
-import instructions.StoreR;
+import instructions.StoreIndirect;
 
 import java.awt.List;
 import java.util.HashMap;
@@ -103,7 +103,7 @@ public class InstructionMaker {
 		String s = scanner.next();
 		try {
 			int r2 = Integer.parseInt(s);
-			return new AddR(r1, r2);
+			return new AddIndirect(r1, r2);
 		} catch (NumberFormatException e) {
 			int addr = resolveAddr(s);
 			// return new AddM(r1, addr);
@@ -116,7 +116,7 @@ public class InstructionMaker {
 		String s = scanner.next();
 		try {
 			int r2 = Integer.parseInt(s);
-			return new LoadR(r1, r2);
+			return new LoadIndirect(r1, r2);
 		} catch (NumberFormatException e) {
 			int addr = resolveAddr(s);
 			// return new LoadM(r1, addr);
@@ -129,7 +129,7 @@ public class InstructionMaker {
 		String s = scanner.next();
 		try {
 			int r2 = Integer.parseInt(s);
-			return new StoreR(r1, r2);
+			return new StoreIndirect(r1, r2);
 		} catch (NumberFormatException e) {
 			int addr = resolveAddr(s);
 			// return new StoreM(r1, addr);
