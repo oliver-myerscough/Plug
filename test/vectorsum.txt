@@ -1,0 +1,19 @@
+byte ZERO 0
+byte ONE 1
+byte N 3
+byte START 15
+byte A 1
+byte B 2
+byte C 3
+program
+load a [ZERO]
+load b [N]
+load c [START]
+ifzer b 10 
+ifneg b 10 
+add a [c]
+add c [ONE]
+sub b [ONE]
+store a [START]
+goto 3
+stop
