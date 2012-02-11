@@ -68,10 +68,13 @@ public class Plug {
 		
 		boolean beforeProg = true;
 		while(programInput.hasNext()) {
-			if(beforeProg) {
-				dataBuilder.append(programInput.next() + " ");
+			String n = programInput.next();
+			if(n.equals("program")){
+				beforeProg = false;
+			} else if(beforeProg) {
+				dataBuilder.append(n + " ");
 			} else {
-				programBuilder.append(programInput.next() + " ");
+				programBuilder.append(n + " ");
 			}
 		}
 		
