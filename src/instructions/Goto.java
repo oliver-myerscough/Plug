@@ -4,23 +4,19 @@ import virtual.Data;
 import virtual.StateVar;
 
 
-public class Goto extends Instruction {
+public class Goto extends Jump {
 
-	private int jumpTo;
-	
 	public Goto(int j){
-		super(BitUtils.createInstrValOne(5, 0, j));
-		jumpTo = j;
+		super(BitUtils.createInstrValOne(5, 0, j), j);
 	}
 
 	@Override
 	public void execute(Data[] memory, int[] registers, StateVar sv) {
 	
 		if(sv.debug) {
-			System.out.println("goto " + jumpTo);
+			System.out.println("goto " + getJumpLoc());
 		}
 		
-		sv.pc = jumpTo;
 	}
 
 }
